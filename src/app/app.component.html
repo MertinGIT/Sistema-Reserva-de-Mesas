@@ -1,0 +1,33 @@
+<div class="container">
+  <header>
+    <h1><i class="fas fa-utensils"></i> Sistema de Reservas de Restaurantes</h1>
+  </header>
+
+  <nav class="tabs">
+    <button [class.active]="pestanaActiva === 'restaurantes'" (click)="cambiarPestana('restaurantes')">
+      <i class="fas fa-store"></i> Restaurantes
+    </button>
+    <button [class.active]="pestanaActiva === 'zonas'" (click)="cambiarPestana('zonas')">
+      <i class="fas fa-map-marked-alt"></i> Zonas
+    </button>
+    <button [class.active]="pestanaActiva === 'mesas'" (click)="cambiarPestana('mesas')">
+      <i class="fas fa-table"></i> Mesas
+    </button>
+    <button [class.active]="pestanaActiva === 'horarios'" (click)="cambiarPestana('horarios')">
+      <i class="fas fa-clock"></i> Horarios
+    </button>
+    <button [class.active]="pestanaActiva === 'nueva'" (click)="cambiarPestana('nueva')">
+      <i class="fas fa-plus-circle"></i> Nueva Reserva
+    </button>
+    <button [class.active]="pestanaActiva === 'listado'" (click)="cambiarPestana('listado')">
+      <i class="fas fa-list-alt"></i> Listado de Reservas
+    </button>
+  </nav>
+
+  <app-restaurantes *ngIf="pestanaActiva === 'restaurantes'"></app-restaurantes>
+  <app-zonas *ngIf="pestanaActiva === 'zonas'"></app-zonas>
+  <app-mesas *ngIf="pestanaActiva === 'mesas'"></app-mesas>
+  <app-horarios *ngIf="pestanaActiva === 'horarios'"></app-horarios>
+  <app-nueva-reserva *ngIf="pestanaActiva === 'nueva'" (reservaCreada)="alCrearReserva()"></app-nueva-reserva>
+  <app-listado-reservas *ngIf="pestanaActiva === 'listado'"></app-listado-reservas>
+</div>
