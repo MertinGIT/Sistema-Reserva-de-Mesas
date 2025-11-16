@@ -11,29 +11,40 @@ import { Restaurante, Zona, Mesa, Horario, Reserva } from '../../modelos/interfa
   template: `
     <div class="tab-content">
       <h2>Administración de Zonas</h2>
-      
+
       <form (ngSubmit)="manejarEnvio()" class="form">
         <div class="form-group">
           <label>Restaurante</label>
-          <select [(ngModel)]="formulario.restauranteId" name="restauranteId" required>
+          <select
+            [(ngModel)]="formulario.restauranteId"
+            name="restauranteId"
+            (change)="cargarDatos()"
+            required
+          >
             <option value="">Seleccione un restaurante</option>
             <option *ngFor="let r of restaurantes" [value]="r.id">{{ r.nombre }}</option>
           </select>
         </div>
         <div class="form-group">
           <label>Nombre de la Zona</label>
-          <input 
-            type="text" 
-            [(ngModel)]="formulario.nombre" 
+          <input
+            type="text"
+            [(ngModel)]="formulario.nombre"
             name="nombre"
             placeholder="Ej: Terraza, Salón, Patio"
-            required>
+            required
+          />
         </div>
         <div class="form-actions">
           <button type="submit" class="btn-primary">
             <i class="fas fa-save"></i> {{ formulario.id ? 'Actualizar' : 'Agregar' }} Zona
           </button>
-          <button type="button" *ngIf="formulario.id" (click)="reiniciarFormulario()" class="btn-secondary">
+          <button
+            type="button"
+            *ngIf="formulario.id"
+            (click)="reiniciarFormulario()"
+            class="btn-secondary"
+          >
             <i class="fas fa-times"></i> Cancelar
           </button>
         </div>
@@ -51,7 +62,9 @@ import { Restaurante, Zona, Mesa, Horario, Reserva } from '../../modelos/interfa
         <div *ngFor="let zona of obtenerZonasFiltradas()" class="list-item">
           <div class="list-item-content">
             <h3>{{ zona.nombre }}</h3>
-            <span class="badge"><i class="fas fa-store"></i> {{ obtenerNombreRestaurante(zona.restauranteId) }}</span>
+            <span class="badge"
+              ><i class="fas fa-store"></i> {{ obtenerNombreRestaurante(zona.restauranteId) }}</span
+            >
           </div>
           <div class="list-item-actions">
             <button (click)="editar(zona)" class="btn-icon" title="Editar">
@@ -68,7 +81,7 @@ import { Restaurante, Zona, Mesa, Horario, Reserva } from '../../modelos/interfa
         </div>
       </div>
     </div>
-  `
+  `,
 })
 export class ZonasComponent implements OnInit {
   restaurantes: Restaurante[] = [];
@@ -85,24 +98,41 @@ export class ZonasComponent implements OnInit {
   cargarDatos() {
     this.restaurantes = this.almacenamientoService.obtenerRestaurantes();
     this.zonas = this.almacenamientoService.obtenerZonas();
+    if (this.filtroRestaurante) {
+      this.zonas = this.obtenerZonasFiltradas();
+    }
   }
 
   manejarEnvio() {
     if (!this.formulario.nombre || !this.formulario.restauranteId) return;
 
+    const existeDuplicado = this.zonas.some(
+      (z) =>
+        z.nombre.toLowerCase().trim() === this.formulario.nombre.toLowerCase().trim() &&
+        z.restauranteId === this.formulario.restauranteId &&
+        z.id !== this.formulario.id
+    );
+
+    if (existeDuplicado) {
+      alert('Ya existe una zona con ese nombre en este restaurante');
+      return;
+    }
+
     if (this.formulario.id) {
-      this.zonas = this.zonas.map(z =>
-        z.id === this.formulario.id ? { 
-          id: z.id, 
-          nombre: this.formulario.nombre, 
-          restauranteId: this.formulario.restauranteId 
-        } : z
+      this.zonas = this.zonas.map((z) =>
+        z.id === this.formulario.id
+          ? {
+              id: z.id,
+              nombre: this.formulario.nombre,
+              restauranteId: this.formulario.restauranteId,
+            }
+          : z
       );
     } else {
       this.zonas.push({
         id: Date.now().toString(),
         nombre: this.formulario.nombre,
-        restauranteId: this.formulario.restauranteId
+        restauranteId: this.formulario.restauranteId,
       });
     }
     this.almacenamientoService.guardarZonas(this.zonas);
@@ -116,20 +146,20 @@ export class ZonasComponent implements OnInit {
   eliminar(id: string) {
     if (!confirm('¿Eliminar zona? Se eliminarán también sus mesas y reservas.')) return;
 
-    this.zonas = this.zonas.filter(z => z.id !== id);
+    this.zonas = this.zonas.filter((z) => z.id !== id);
     this.almacenamientoService.guardarZonas(this.zonas);
 
     const mesas = this.almacenamientoService.obtenerMesas();
-    const mesasActualizadas = mesas.filter(m => m.zonaId !== id);
+    const mesasActualizadas = mesas.filter((m) => m.zonaId !== id);
     this.almacenamientoService.guardarMesas(mesasActualizadas);
 
     const horarios = this.almacenamientoService.obtenerHorarios();
-    const horariosActualizados = horarios.filter(h => h.zonaId !== id);
+    const horariosActualizados = horarios.filter((h) => h.zonaId !== id);
     this.almacenamientoService.guardarHorarios(horariosActualizados);
 
     const reservas = this.almacenamientoService.obtenerReservas();
-    const reservasActualizadas = reservas.filter(r => {
-      const mesa = mesas.find(m => m.id === r.idMesaAsignada);
+    const reservasActualizadas = reservas.filter((r) => {
+      const mesa = mesas.find((m) => m.id === r.idMesaAsignada);
       return mesa ? mesa.zonaId !== id : false;
     });
     this.almacenamientoService.guardarReservas(reservasActualizadas);
@@ -140,12 +170,19 @@ export class ZonasComponent implements OnInit {
   }
 
   obtenerZonasFiltradas(): Zona[] {
-    if (!this.filtroRestaurante) return this.zonas;
-    return this.zonas.filter(z => z.restauranteId === this.filtroRestaurante);
+    if (this.formulario.restauranteId) {
+      const todasLasZonas = this.almacenamientoService.obtenerZonas();
+      return todasLasZonas.filter((z) => z.restauranteId === this.formulario.restauranteId);
+    }
+    if (this.filtroRestaurante) {
+      const todasLasZonas = this.almacenamientoService.obtenerZonas();
+      return todasLasZonas.filter((z) => z.restauranteId === this.filtroRestaurante);
+    }
+    return this.zonas;
   }
 
   obtenerNombreRestaurante(id: string): string {
-    const restaurante = this.restaurantes.find(r => r.id === id);
+    const restaurante = this.restaurantes.find((r) => r.id === id);
     return restaurante ? restaurante.nombre : 'N/A';
   }
 }

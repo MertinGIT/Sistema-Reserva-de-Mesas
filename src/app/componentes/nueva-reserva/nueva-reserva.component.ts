@@ -11,12 +11,16 @@ import { Restaurante, Zona, Mesa, Horario, Reserva } from '../../modelos/interfa
   template: `
     <div class="tab-content">
       <h2>Nueva Reserva</h2>
-      
+
       <form (ngSubmit)="manejarEnvio()" class="form">
         <div class="form-group">
           <label><i class="fas fa-arrow-right"></i> 1. Seleccione Restaurante</label>
-          <select [(ngModel)]="formulario.restauranteId" name="restauranteId" 
-                  (change)="alCambiarRestaurante()" required>
+          <select
+            [(ngModel)]="formulario.restauranteId"
+            name="restauranteId"
+            (change)="alCambiarRestaurante()"
+            required
+          >
             <option value="">Seleccione un restaurante</option>
             <option *ngFor="let r of restaurantes" [value]="r.id">{{ r.nombre }}</option>
           </select>
@@ -24,10 +28,12 @@ import { Restaurante, Zona, Mesa, Horario, Reserva } from '../../modelos/interfa
 
         <div class="form-group" *ngIf="formulario.restauranteId">
           <label><i class="fas fa-arrow-right"></i> 2. Seleccione Zona</label>
-          <select [(ngModel)]="formulario.zonaId" name="zonaId" 
-                  (change)="alCambiarZona()" required>
+          <select [(ngModel)]="formulario.zonaId" name="zonaId" (change)="alCambiarZona()" required>
             <option value="">Seleccione una zona</option>
-            <option *ngFor="let z of obtenerZonasPorRestaurante(formulario.restauranteId)" [value]="z.id">
+            <option
+              *ngFor="let z of obtenerZonasPorRestaurante(formulario.restauranteId)"
+              [value]="z.id"
+            >
               {{ z.nombre }}
             </option>
           </select>
@@ -36,23 +42,32 @@ import { Restaurante, Zona, Mesa, Horario, Reserva } from '../../modelos/interfa
         <div class="form-row" *ngIf="formulario.zonaId">
           <div class="form-group">
             <label><i class="fas fa-calendar-alt"></i> 3. Fecha</label>
-            <input 
-              type="date" 
-              [(ngModel)]="formulario.fecha" 
+            <input
+              type="date"
+              [(ngModel)]="formulario.fecha"
               name="fecha"
               [min]="obtenerFechaHoy()"
               (change)="alCambiarFecha()"
-              required>
+              required
+            />
           </div>
           <div class="form-group">
             <label><i class="fas fa-clock"></i> 4. Horario</label>
-            <select [(ngModel)]="formulario.hora" name="hora" required [disabled]="!formulario.fecha">
+            <select
+              [(ngModel)]="formulario.hora"
+              name="hora"
+              required
+              [disabled]="!formulario.fecha"
+            >
               <option value="">Seleccione horario</option>
               <option *ngFor="let hora of obtenerHorariosDisponibles()" [value]="hora">
                 {{ hora }}
               </option>
             </select>
-            <small *ngIf="formulario.fecha && obtenerHorariosDisponibles().length === 0" style="color: #991b1b;">
+            <small
+              *ngIf="formulario.fecha && obtenerHorariosDisponibles().length === 0"
+              style="color: #991b1b;"
+            >
               No hay horarios disponibles para esta fecha
             </small>
           </div>
@@ -60,13 +75,14 @@ import { Restaurante, Zona, Mesa, Horario, Reserva } from '../../modelos/interfa
 
         <div class="form-group" *ngIf="formulario.hora">
           <label><i class="fas fa-users"></i> 5. Cantidad de Personas</label>
-          <input 
-            type="number" 
-            [(ngModel)]="formulario.cantidadPersonas" 
+          <input
+            type="number"
+            [(ngModel)]="formulario.cantidadPersonas"
             name="cantidadPersonas"
             min="1"
             placeholder="Número de comensales"
-            required>
+            required
+          />
         </div>
 
         <div *ngIf="formulario.cantidadPersonas" class="form-section">
@@ -74,31 +90,34 @@ import { Restaurante, Zona, Mesa, Horario, Reserva } from '../../modelos/interfa
           <div class="form-row">
             <div class="form-group">
               <label>Nombre</label>
-              <input 
-                type="text" 
-                [(ngModel)]="formulario.nombre" 
+              <input
+                type="text"
+                [(ngModel)]="formulario.nombre"
                 name="nombre"
                 placeholder="Nombre"
-                required>
+                required
+              />
             </div>
             <div class="form-group">
               <label>Apellido</label>
-              <input 
-                type="text" 
-                [(ngModel)]="formulario.apellido" 
+              <input
+                type="text"
+                [(ngModel)]="formulario.apellido"
                 name="apellido"
                 placeholder="Apellido"
-                required>
+                required
+              />
             </div>
           </div>
           <div class="form-group">
             <label><i class="fas fa-phone"></i> Teléfono</label>
-            <input 
-              type="tel" 
-              [(ngModel)]="formulario.telefono" 
+            <input
+              type="tel"
+              [(ngModel)]="formulario.telefono"
               name="telefono"
               placeholder="Teléfono de contacto"
-              required>
+              required
+            />
           </div>
         </div>
 
@@ -113,7 +132,7 @@ import { Restaurante, Zona, Mesa, Horario, Reserva } from '../../modelos/interfa
         {{ mensaje }}
       </div>
     </div>
-  `
+  `,
 })
 export class NuevaReservaComponent implements OnInit {
   @Output() reservaCreada = new EventEmitter<void>();
@@ -132,7 +151,7 @@ export class NuevaReservaComponent implements OnInit {
     cantidadPersonas: 0,
     nombre: '',
     apellido: '',
-    telefono: ''
+    telefono: '',
   };
 
   mensaje = '';
@@ -153,9 +172,19 @@ export class NuevaReservaComponent implements OnInit {
   }
 
   manejarEnvio() {
-    const { restauranteId, zonaId, fecha, hora, cantidadPersonas, nombre, apellido, telefono } = this.formulario;
+    const { restauranteId, zonaId, fecha, hora, cantidadPersonas, nombre, apellido, telefono } =
+      this.formulario;
 
-    if (!restauranteId || !zonaId || !fecha || !hora || !cantidadPersonas || !nombre || !apellido || !telefono) {
+    if (
+      !restauranteId ||
+      !zonaId ||
+      !fecha ||
+      !hora ||
+      !cantidadPersonas ||
+      !nombre ||
+      !apellido ||
+      !telefono
+    ) {
       this.mostrarMensaje('Por favor complete todos los campos', 'error');
       return;
     }
@@ -165,29 +194,49 @@ export class NuevaReservaComponent implements OnInit {
       return;
     }
 
-    const mesasDisponibles = this.mesas.filter(m => m.zonaId === zonaId && m.capacidad >= cantidadPersonas);
+    const mesasDisponibles = this.mesas.filter(
+      (m) => m.zonaId === zonaId && m.capacidad >= cantidadPersonas
+    );
 
     if (mesasDisponibles.length === 0) {
-      this.mostrarMensaje('No hay mesas disponibles con capacidad suficiente para la cantidad de personas', 'error');
+      this.mostrarMensaje(
+        'No hay mesas disponibles con capacidad suficiente para la cantidad de personas',
+        'error'
+      );
       return;
     }
 
     const idsMesasOcupadas = this.reservas
-      .filter(r => r.fecha === fecha && r.hora === hora)
-      .map(r => r.idMesaAsignada);
+      .filter((r) => r.fecha === fecha && r.hora === hora)
+      .map((r) => r.idMesaAsignada);
 
-    const mesaLibre = mesasDisponibles.find(m => !idsMesasOcupadas.includes(m.id));
+    // Filtrar solo mesas libres
+    const mesasLibres = mesasDisponibles.filter((m) => !idsMesasOcupadas.includes(m.id));
 
-    if (!mesaLibre) {
+    if (mesasLibres.length === 0) {
       const totalMesas = mesasDisponibles.length;
-      const mesasOcupadas = mesasDisponibles.filter(m => idsMesasOcupadas.includes(m.id)).length;
-      
+      const mesasOcupadas = mesasDisponibles.filter((m) => idsMesasOcupadas.includes(m.id)).length;
+
       this.mostrarMensaje(
         `No hay mesas disponibles para la fecha y hora seleccionadas. ` +
-        `${mesasOcupadas} de ${totalMesas} mesas con capacidad suficiente ya están reservadas.`,
+          `${mesasOcupadas} de ${totalMesas} mesas con capacidad suficiente ya están reservadas.`,
         'error'
       );
       return;
+    }
+
+    // Elegir la mesa más adecuada:
+    // 1. Primero buscar una mesa con capacidad exacta
+    // 2. Si no hay, buscar la de menor capacidad que cumpla
+    // Ordenar mesas por capacidad ascendente
+    const mesasOrdenadas = mesasLibres.sort((a, b) => a.capacidad - b.capacidad);
+
+    // Buscar primero una mesa con capacidad exacta
+    let mesaLibre = mesasOrdenadas.find((m) => m.capacidad === cantidadPersonas);
+
+    // Si no hay mesa exacta, tomar la primera (menor capacidad disponible)
+    if (!mesaLibre) {
+      mesaLibre = mesasOrdenadas[0];
     }
 
     const nuevaReserva: Reserva = {
@@ -198,7 +247,7 @@ export class NuevaReservaComponent implements OnInit {
       idMesaAsignada: mesaLibre.id,
       nombre,
       apellido,
-      telefono
+      telefono,
     };
 
     this.reservas.push(nuevaReserva);
@@ -208,7 +257,7 @@ export class NuevaReservaComponent implements OnInit {
       `Reserva confirmada exitosamente! Mesa ${mesaLibre.numero} asignada para ${cantidadPersonas} personas el ${fecha} a las ${hora}`,
       'success'
     );
-    
+
     setTimeout(() => {
       this.reiniciarFormulario();
       this.reservaCreada.emit();
@@ -239,26 +288,26 @@ export class NuevaReservaComponent implements OnInit {
       cantidadPersonas: 0,
       nombre: '',
       apellido: '',
-      telefono: ''
+      telefono: '',
     };
     this.mensaje = '';
   }
 
   obtenerZonasPorRestaurante(restauranteId: string): Zona[] {
-    return this.zonas.filter(z => z.restauranteId === restauranteId);
+    return this.zonas.filter((z) => z.restauranteId === restauranteId);
   }
 
   obtenerHorariosDisponibles(): string[] {
     if (!this.formulario.zonaId || !this.formulario.fecha) return [];
 
-    const horario = this.horarios.find(h => h.zonaId === this.formulario.zonaId);
+    const horario = this.horarios.find((h) => h.zonaId === this.formulario.zonaId);
     if (!horario) return [];
 
     const esHoy = this.esHoy(this.formulario.fecha);
-    
+
     if (esHoy) {
       const horaActual = this.obtenerHoraActual();
-      return horario.horarios.filter(h => this.compararHoras(h, horaActual) > 0);
+      return horario.horarios.filter((h) => this.compararHoras(h, horaActual) > 0);
     }
 
     return horario.horarios;
@@ -279,35 +328,35 @@ export class NuevaReservaComponent implements OnInit {
 
   normalizarHora(hora: string): string {
     hora = hora.trim();
-    
+
     if (hora.includes(':')) {
       return hora;
     }
-    
+
     const numero = parseInt(hora);
     if (!isNaN(numero)) {
       return numero.toString().padStart(2, '0') + ':00';
     }
-    
+
     return hora;
   }
 
   compararHoras(hora1: string, hora2: string): number {
     const h1Normalizada = this.normalizarHora(hora1);
     const h2Normalizada = this.normalizarHora(hora2);
-    
+
     const [horas1, minutos1] = h1Normalizada.split(':').map(Number);
     const [horas2, minutos2] = h2Normalizada.split(':').map(Number);
-    
+
     const totalMinutos1 = horas1 * 60 + (minutos1 || 0);
     const totalMinutos2 = horas2 * 60 + (minutos2 || 0);
-    
+
     return totalMinutos1 - totalMinutos2;
   }
 
   validarHorario(fecha: string, hora: string): boolean {
     if (!this.esHoy(fecha)) return true;
-    
+
     const horaActual = this.obtenerHoraActual();
     return this.compararHoras(hora, horaActual) > 0;
   }
@@ -320,7 +369,7 @@ export class NuevaReservaComponent implements OnInit {
   mostrarMensaje(mensaje: string, tipo: 'success' | 'error') {
     this.mensaje = mensaje;
     this.claseMensaje = tipo === 'success' ? 'alert alert-success' : 'alert alert-error';
-    
+
     setTimeout(() => {
       this.mensaje = '';
     }, 5000);
