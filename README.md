@@ -23,6 +23,8 @@ ng generate component component-name
 For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
 ```bash
+
+
 ng generate --help
 ```
 
@@ -57,3 +59,7 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+Utilizamos como llm claude.ai para armar la base del proyecto y ayudarnos a armar la logica de negocio, a continuacion paso el prompt
+https://claude.ai/share/a27e9045-0883-407b-b38c-59eba3cb4d7e
